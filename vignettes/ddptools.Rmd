@@ -1,0 +1,151 @@
+---
+title: "DDP Tools"
+author: "Damian Thomas"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+The Federal Reserve Board (FRB) publishes data on a regular basis. Many of these [statistical releases](https://www.federalreserve.gov/data.htm) are available for bulk download via the [Data Download Program](https://www.federalreserve.gov/datadownload/) (DDP), an application interface based on an early version of the [Statistical Data and Metadata eXchage](https://sdmx.org/) (SDMX) technical standard for XML data. The `ddptools` package is intended to provide a bridge for R users looking for a way to access these data releases more readily. 
+
+## Example
+
+Interest on Required Reserve Balances and Excess Balances (https://www.federalreserve.gov/monetarypolicy/reqresbalances.htm)
+
+```{r }
+library(ddptools)
+
+download_zip("PRATES", dir = ".", quiet = TRUE)
+extract_xml("FRB_PRATES.zip", exdir = ".")
+
+db <- read_ddp("PRATES_data.xml")
+```
+
+The result is a list of tis objects. The name of each list element corresponds to the `series_name` attribute for the series in the SDMX data file. This particular release contains two time series.
+```{r }
+names(db)
+```
+
+Recent observations
+```{r }
+tail(db$RESBME_N.D)
+```
+
+Metadata are stored as attributes of each tis object.
+```{r }
+str(db$RESBME_N.D)
+```
+
+
+## Working with `tis` objects
+
+The [tis package](https://cran.r-project.org/web/packages/tis/index.html) was originally developed by Jeff Hallman, an economist at the Federal Reserve. tis objects are numeric vectors with an attribute (start) to manage time indexing.  The plots below make use of the `ti()` function to retrieve the time index, and `attr()` to retrieve individual attributes. Otherwise, tis objects work just like any other numeric vector.
+
+```{r fig.show = "hold"}
+plot(
+    x    = as.Date(tis::ti(db$RESBME_N.D)),
+    y    = db$RESBME_N.D,
+    type = "s",
+    main = "RESBME_N.D",
+    xlab = "Date",
+    ylab = attr(db$RESBME_N.D, "unit")
+)
+
+plot(
+    x    = as.Date(tis::ti(db$RESBMS_N.D)),
+    y    = db$RESBMS_N.D,
+    type = "s",
+    main = "RESBMS_N.D",
+    xlab = "Date",
+    ylab = attr(db$RESBMS_N.D, "unit")
+)
+```
+
+```{r }
+summary(db$RESBME_N.D)
+```
+
+```{r}
+lm(RESBMS_N.D ~ lag(RESBME_N.D), db)
+```
+
+```{r }
+arima(db$RESBMS_N.D, c(0, 0, 1))
+```
+
+The tis package provides useful functions for time-aware calculations
+
+* lag
+* diff
+* arithmetic
+* frequency conversions
+* non-overlapping timeframes
+
+```
+t <- ti(db$RESBME_N.D)
+newseries <- 100 * (db$RESBME_N.D[t] - db$RESBME_N.D[t-10])
+```
+
+## Data Frame
+
+For those who prefer data frames, conversion can be accomplished with tidyverse functions
+```{r load-tidyverse, include = FALSE}
+library(dplyr)
+library(purrr)
+library(tidyr)
+```
+
+### Metadata
+```{r }
+series_metadata <- names(db) %>%
+    map_df(function(x) {
+        metadata <- attributes(db[[x]])
+        metadata[["series_name"]] <- x
+        metadata[["start"]] <- as.POSIXct(metadata[["start"]])
+        metadata[["class"]] <- NULL
+        as.data.frame(metadata, stringsAsFactors = FALSE)
+    }) 
+
+str(series_metadata)
+```
+
+```{r eval = FALSE, include = FALSE}
+Reshaping for display
+#```{r }
+series_metadata %>% 
+    mutate(start = format(start, "%Y-%m-%d")) %>%
+    gather(key = attribute, value = value, -series_name) %>%
+    spread(key = series_name, value = value) %>%
+    knitr::kable()
+```
+
+
+### Data
+```{r }
+series_data <- names(db) %>%
+    map(function(x) {
+        df <- data_frame(
+            as.Date(tis::ti(db[[x]])), 
+            as.numeric(db[[x]])
+        )
+        names(df) <- c("date", x)
+        df
+    }) %>%
+    reduce(.f = full_join, by = "date")
+```
+
+
+```{r }
+series_data 
+```
+

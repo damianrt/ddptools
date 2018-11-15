@@ -25,7 +25,7 @@ A list of \code{tis} objects
 \description{
 Read time series data and metadata stored in an SDMX formatted XML file, and
 return a list of \code{tis} objects. Series metadata are stored as attributes
-within each \code{tis} object in the output.
+within each \code{tis} object.
 }
 \details{
 Input files are read sequentially, line-by-line, to avoid storing the

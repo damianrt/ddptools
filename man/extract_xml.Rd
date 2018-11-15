@@ -11,6 +11,9 @@ extract_xml(zipfile, ...)
 
 \item{...}{Additional options for the \code{unzip} function}
 }
+\value{
+name of the file that was extracted
+}
 \description{
 DDP zip files contain multiple xml files. This function will selectively
 extract the SDMX data file that contains the time series data. By default

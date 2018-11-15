@@ -70,6 +70,8 @@ lookup_tif <- function(freq = NULL) {
 #' Valid codes are documented in the SDMX statistical standards:
 #' \url{https://sdmx.org/?page_id=3215}. DDP data include additional nonstandard
 #' codes. Set \code{standard = TRUE} to exclude these values.
+#'
+#' @export
 
 lookup_obs_status <- function(code = NULL, standard = FALSE) {
 
@@ -121,6 +123,8 @@ lookup_obs_status <- function(code = NULL, standard = FALSE) {
 #' lookup_release(c("PRATES", "H41" ))
 #'
 #' lookup_release()       # returns a named vector with all releases
+#'
+#' @export
 
 lookup_release_name <- function(key = NULL) {
 

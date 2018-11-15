@@ -24,4 +24,5 @@ lookup_release("H15")  # Selected Interest Rates (H.15)
 lookup_release(c("PRATES", "H41" ))
 
 lookup_release()       # returns a named vector with all releases
+
 }

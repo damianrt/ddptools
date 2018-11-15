@@ -75,7 +75,7 @@ ddp_zipfile <- function(key, dir = ".") {
 #' @param ... Any additional arguments are passed on to the \code{download.file}
 #'        function, which handles the download
 #'
-#' @return ...
+#' @return name of the local file that was downloaded
 #'
 #' @details
 #'
@@ -98,6 +98,7 @@ download_zip <- function(key, dir = ".", url = NULL, destfile = NULL, ...) {
     if ( is.null(url) ) url <- ddp_url(key)
     if ( is.null(destfile) ) destfile <- ddp_zipfile(key, dir = dir)
     download.file(url = url, destfile = destfile, ...)
+    destfile
 }
 
 #' Extract SDMX data from DDP zip file
@@ -116,6 +117,8 @@ download_zip <- function(key, dir = ".", url = NULL, destfile = NULL, ...) {
 #' @param zipfile A file path for a DDP zip file
 #' @param ... Additional options for the \code{unzip} function
 #'
+#' @return name of the file that was extracted
+#'
 #' @examples
 #'
 #' # Extract H15_data.xml in current directory
@@ -132,7 +135,8 @@ extract_xml <- function(zipfile, ...) {
     if ( "files" %in% names(args) ) {
         unzip(zipfile, ...)
     } else {
-        xmlfile <- grep("_data\\.xml$", unzip(zipfile, list = TRUE)$Name, value = TRUE)
-        unzip(zipfile, files = xmlfile, ...)
+        files <- grep("_data\\.xml$", unzip(zipfile, list = TRUE)$Name, value = TRUE)
+        unzip(zipfile, files = files, ...)
     }
+    files
 }

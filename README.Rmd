@@ -1,20 +1,23 @@
 ---
-title: "DDP Tools"
-author: "Damian Thomas"
-date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Vignette Title}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+output: github_document
 ---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
 )
 ```
+# ddptools
+
+The goal of ddptools is to make it easier to process economic data published by Federal Reserve. 
+
+
+The Federal Reserve Board (FRB) has been publishing US Economic data [since 1914](https://www.federalreserve.gov/econresdata/feds/2016/files/2016016pap.pdf). Many of the current [statistical releases](https://www.federalreserve.gov/data.htm) are available for download via the [Data Download Program](https://www.federalreserve.gov/datadownload/) (DDP)--an application interface built around XML files (in [SDMX](https://sdmx.org/) 1.0 format). The `ddptools` package is intended to make it easier to process and make use of these data. 
 
 
 ```{r get-data-file, include = FALSE, echo = FALSE}
@@ -26,11 +29,10 @@ if ( !file.exists("PRATES_data.xml") ) "PRATES"  %>%
     extract_xml(exdir = ".")
 ```
 
-The Federal Reserve Board (FRB) has been publishing US Economic data [since 1914](https://www.federalreserve.gov/econresdata/feds/2016/files/2016016pap.pdf). Many of the current [statistical releases](https://www.federalreserve.gov/data.htm) are available for download via the [Data Download Program](https://www.federalreserve.gov/datadownload/) (DDP)--an application interface built around XML files (in [SDMX](https://sdmx.org/) 1.0 format). The `ddptools` package is intended to make it easier to process and make use of these data. 
 
 ## Installation
 
-```{r eval = FALSE}
+```r 
 devtools::install_github("damianrt/ddptools")
 ```
 

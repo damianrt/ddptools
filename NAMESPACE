@@ -2,6 +2,8 @@
 
 export(download_zip)
 export(extract_xml)
+export(lookup_obs_status)
+export(lookup_release_name)
 export(read_ddp)
 importFrom(tis,tif)
 importFrom(tis,tis)

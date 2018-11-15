@@ -24,7 +24,7 @@ and the \code{dir} option}
 function, which handles the download}
 }
 \value{
-...
+name of the local file that was downloaded
 }
 \description{
 Given a release key, this function will download the zip file for the
